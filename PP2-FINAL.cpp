@@ -8,6 +8,11 @@ using namespace std;
 #define TAM 787
 #define NIL NULL
 
+
+#define DIREITA 200
+#define ESQUERDA 100
+
+
 class Item{
 	private:
 		int chave;
@@ -15,7 +20,7 @@ class Item{
 		void setChave(int chave){
 			this->chave = chave;
 		}
-		
+
 		int getChave(){
 			return chave;
 		}
@@ -25,7 +30,7 @@ class No{
 	private:
 		Item item;
 		string nome;
-		int fatorBalance; 
+		int fatorBalance;
 		int alturaEsquerda;
 		int alturaDireita;
 		No* noEsq;
@@ -35,7 +40,7 @@ class No{
 		int cont;
 		int compara;
 		int aux;
-		
+
 		void distancia(No* x, No* p){
 			cont++;
 			aux = 0;
@@ -52,7 +57,7 @@ class No{
 				distancia(x, p->getNoEsq());
 			}
 		}
-		
+
 		void noMaisLongo(No* p, No* raiz){
 			cont = 0;
 			if(p->ehNoFolha() == true){
@@ -62,22 +67,22 @@ class No{
 			else{
 				if(p->temNoDir() == true){
 					noMaisLongo(p->getNoDir(), raiz);
-				}				
+				}
 				if(p->temNoEsq() == true){
 					noMaisLongo(p->getNoEsq(), raiz);
-				}			
+				}
 			}
 		}
-		
+
 		string formatacao(string std){
 			while(std.length() < 4){
 				std = "0" + std;
 			}
 			return std;
 		}
-				
+
 	public:
-			
+
 		void criaNo(string it){
 			nome = formatacao(it);
 			Item aux;
@@ -91,50 +96,50 @@ class No{
 			compara = 0;
 			cont = 0;
 		}
-		
+
 		int armazenaMaior(int it){
 			if(it > compara){
 				compara = it;
 			}
 			return compara;
 		}
-		
+
 		void setItem(Item item){
 			this->item = item;
 		}
-		
+
 		void setNoEsq(No* noEsq){
 			this->noEsq = noEsq;
 		}
-		
+
 		void setNoDir(No* noDir){
 			this->noDir = noDir;
 		}
-		
+
 		void setPai(No* pai){
 			this->pai = pai;
 		}
-		
+
 		string getNome(){
 			return nome;
 		}
-		
+
 		No* getPai(){
 			return pai;
 		}
-		
+
 		int getItem(){
 			return item.getChave();
 		}
-		
+
 		No* getNoEsq(){
 			return this->noEsq;
 		}
-		
+
 		No* getNoDir(){
 			return this->noDir;
 		}
-		
+
 		bool ehNoFolha(){
 			if((noDir == NIL )&&(noEsq == NIL)){
 				return true;
@@ -143,7 +148,7 @@ class No{
 				return false;
 			}
 		}
-		
+
 		bool temNoPai(){
 			if(pai == NIL){
 				return false;
@@ -152,7 +157,7 @@ class No{
 				return true;
 			}
 		}
-		
+
 		bool temNoEsq(){
 			if(noEsq != NIL){
 				return true;
@@ -161,7 +166,7 @@ class No{
 				return false;
 			}
 		}
-		
+
 		bool temNoDir(){
 			if(noDir != NIL){
 				return true;
@@ -170,34 +175,7 @@ class No{
 				return false;
 			}
 		}
-		
-		
-		int alturaDir(){
-			compara = 0;
-			if(temNoDir() == true){
-				noMaisLongo(noDir, noDir);
-				alturaDireita = compara;
-				return alturaDireita;	
-			}
-			alturaDireita = 0;
-			return 0;
-		}
-		
-		int alturaEsq(){
-			compara = 0;
-			if(temNoEsq() == true){
-				noMaisLongo(noEsq, noEsq);
-				alturaEsquerda = compara;
-				return alturaEsquerda;				
-			}
-			else{
-				alturaEsquerda = 0;
-				return 0;
-			}
-			
 
-		}
-		
 		int fatBalance(){
 			int altE = 0;
 			int altD = 0;
@@ -213,8 +191,8 @@ class No{
 			}
 			return altD - altE;
 		}
-		
-		
+
+
 };
 
 class Pilha{
@@ -222,13 +200,13 @@ class Pilha{
 		int topo;
 		int fundo;
 		No* pilha[100];
-		
+
 	public:
 		void criarPilha(){
 			fundo = 0;
 			topo = fundo;
 		}
-		
+
 		void empilha(No* item){
  			if(topo == 100){
 				cout << "Lista Cheia";
@@ -238,7 +216,7 @@ class Pilha{
 				pilha[topo] = item;
 			}
 		}
-		
+
 		No* desempilha(){
 			No* aux = pilha[topo];
 			if(topo == fundo){
@@ -249,37 +227,37 @@ class Pilha{
 			}
 			return aux;
 		}
-		
+
 		void mostraPilha(){
 			for(int i =1; i < topo + 1; i++){
 				cout<< pilha[i]->getItem() << "\n";
 			}
 			cout << "-\n";
 		}
-		
+
 		bool achaElemento(No* it){
-			
+
 			for(int i = 1; i < topo + 1; i++){
 				if(pilha[i]->getItem() == it->getItem()){
 					return true;
 				}
 			}
-			
+
 			return false;
 		}
-		
+
 		int alturaPilha(){
 			return topo;
 		}
-		
+
 		int alturaDe(No* it){
 			for(int i = 1; i < topo + 1; i++){
 				if(pilha[i]->getItem() == it->getItem()){
 					return i;
 				}
-			}			
+			}
 		}
-		
+
 		No* ultimoElemento(){
 			return pilha[topo];
 		}
@@ -292,7 +270,7 @@ class Arvore{
 		No* ultimo;
 		No* saida[20];
 		int cont;
-		
+
 		void inser(No* item, No* raiz){
 			if(((raiz->temNoDir() == false) && (item->getItem() > raiz->getItem())) || ((raiz->temNoEsq() == false) && (item->getItem() < raiz->getItem()))){
 				if(item->getItem() > raiz->getItem()){
@@ -311,24 +289,85 @@ class Arvore{
 				inser(item, raiz->getNoEsq());
 			}
 		}
-		
+
 		void percorre(No* x, No* p){
 			if((p->fatBalance() > 1) || (p->fatBalance() < -1)){
 				pilha.empilha(p);
 			}
 			if(p->temNoDir() == true){
 				percorre(x, p->getNoDir());
-			}				
+			}
 			if(p->temNoEsq() == true){
 				percorre(x, p->getNoEsq());
-			}			
+			}
 		}
-		
+
+
+		No* rotacaoSimples(No* p, int direcao){
+            No* aux;
+			No* saida;
+			No* nPai;
+
+			switch(direcao){
+            case ESQUERDA:
+                saida = p->getNoDir();
+                if(p->getNoDir()->temNoEsq() == true){
+                    p->getNoDir()->getNoEsq()->setPai(p);
+                }
+                if(p->temNoPai() == true){
+                    nPai = p->getPai();
+                    p->getNoDir()->setPai(nPai);
+                    if(saida->getItem() > nPai->getItem()){
+                        nPai->setNoDir(saida);
+                    }
+                    else{
+                        nPai->setNoEsq(saida);
+                    }
+                    saida->setPai(nPai);
+                }
+                else{
+                    saida->setPai(NIL);
+                }
+                p->setPai(p->getNoDir());
+                aux = p->getNoDir()->getNoEsq();
+                p->getNoDir()->setNoEsq(p);
+                p->setNoDir(aux);
+                return saida;
+			case DIREITA:
+                saida = p->getNoEsq();
+                if(p->getNoEsq()->temNoDir() == true){
+                    p->getNoEsq()->getNoDir()->setPai(p);
+                }
+                if(p->temNoPai() == true){
+                    nPai = p->getPai();
+                    p->getNoEsq()->setPai(nPai);
+                    if(saida->getItem() > nPai->getItem()){
+                        nPai->setNoDir(saida);
+                    }
+                    else{
+                        nPai->setNoEsq(saida);
+                    }
+                    saida->setPai(nPai);
+                }
+                else{
+                    saida->setPai(NIL);
+                }
+                p->setPai(p->getNoEsq());
+                aux = p->getNoEsq()->getNoDir();
+                p->getNoEsq()->setNoDir(p);
+                p->setNoEsq(aux);
+                return saida;
+		}
+
+		/*
 		No* rotacaoSimplesEsq(No* p){
 			No* aux;
 			No* saida;
 			No* nPai;
 			saida = p->getNoDir();
+			if(p->getNoDir()->temNoEsq() == true){
+				p->getNoDir()->getNoEsq()->setPai(p);
+			}
 			if(p->temNoPai() == true){
 				nPai = p->getPai();
 				p->getNoDir()->setPai(nPai);
@@ -349,12 +388,15 @@ class Arvore{
 			p->setNoDir(aux);
 			return saida;
 		}
-		
+
 		No* rotacaoSimplesDir(No* p){
 			No* aux;
 			No* saida;
 			No* nPai;
 			saida = p->getNoEsq();
+			if(p->getNoEsq()->temNoDir() == true){
+				p->getNoEsq()->getNoDir()->setPai(p);
+			}
 			if(p->temNoPai() == true){
 				nPai = p->getPai();
 				p->getNoEsq()->setPai(nPai);
@@ -375,7 +417,7 @@ class Arvore{
 			p->setNoEsq(aux);
 			return saida;
 		}
-		
+*/
 		No* rotacaoDuplaEsq(No* p){
 			No* aux;
 			No* nPai;
@@ -389,9 +431,9 @@ class Arvore{
 					nPai->setNoEsq(aux);
 				}
 			}
-			rotacaoSimplesDir(p->getNoDir());
+			rotacaoSimples(p->getNoDir(),DIREITA);
 			p->setNoDir(aux);
-			rotacaoSimplesEsq(p);
+			rotacaoSimples(p,ESQUERDA);
 			if(aux->temNoEsq() == true){
 				if(aux->getNoEsq()->temNoEsq() == true){
 					aux->getNoEsq()->getNoEsq()->setPai(aux->getNoEsq());
@@ -410,7 +452,7 @@ class Arvore{
 			}
 			return aux;
 		}
-		
+
 		No* rotacaoDuplaDir(No* p){
 			No* aux;
 			No* nPai;
@@ -424,9 +466,9 @@ class Arvore{
 					nPai->setNoEsq(aux);
 				}
 			}
-			rotacaoSimplesEsq(p->getNoEsq());
+			rotacaoSimples(p->getNoEsq(),ESQUERDA);
 			p->setNoEsq(aux);
-			rotacaoSimplesDir(p);
+			rotacaoSimples(p,DIREITA);
 			if(aux->temNoEsq() == true){
 				if(aux->getNoEsq()->temNoEsq() == true){
 					aux->getNoEsq()->getNoEsq()->setPai(aux->getNoEsq());
@@ -445,12 +487,12 @@ class Arvore{
 			}
 			return aux;
 		}
-		
+
 		void balanceamento(No* raiz){
 			No* aux;
 			if(raiz->fatBalance() > 1){
 				if(raiz->getNoDir()->fatBalance() >= 0){
-					aux = rotacaoSimplesEsq(raiz);
+					aux = rotacaoSimples(raiz,ESQUERDA);
 					if(aux->temNoPai() == false){
 						setRaiz(aux);
 					}
@@ -464,7 +506,7 @@ class Arvore{
 			}
 			else if(raiz->fatBalance() < -1){
 				if(raiz->getNoEsq()->fatBalance() <= 0){
-					aux = rotacaoSimplesDir(raiz);
+					aux = rotacaoSimples(raiz,DIREITA);
 					if(aux->temNoPai() == false){
 						setRaiz(aux);
 					}
@@ -475,31 +517,31 @@ class Arvore{
 						setRaiz(aux);
 					}
 				}
-			}		
+			}
 		}
-		
+
 		string formatacao(string std){
 			while(std.length() < 4){
 				std = "0" + std;
 			}
 			return std;
 		}
-		
+
 	public:
-		
+
 		void setRaiz(No* raiz){
 			this->raiz = raiz;
 		}
-		
+
 		No* getRaiz(){
 			return raiz;
 		}
-		
+
 		void cria(){
 			cont = 0;
 			raiz = NIL;
 		}
-		
+
 		void busca(int x, No* p){
 			saida[cont] = p;
 			cont++;
@@ -514,7 +556,7 @@ class Arvore{
 				}
 			}
 		}
-		
+
 		void final(string str){
 			bool encontrado = false;
 			for(int l = 0; l < cont; l++){
@@ -540,43 +582,43 @@ class Arvore{
 				}
 			}
 			if(encontrado == false){
-				cout << "Chave não encontrada.";
+				cout << "Chave nÃ£o encontrada.";
 			}
 		}
-		
-		void inserir(No* num){	
+
+		void inserir(No* num){
 			if(raiz == NIL){
 				setRaiz(num);
 			}
 			else{
-				ultimo = NIL;			
+				ultimo = NIL;
 				inser(num, raiz);
 				pilha.criarPilha();
 				percorre(raiz, raiz);
 				for(int i = 0; i < pilha.alturaPilha(); i++){
-					balanceamento(pilha.desempilha());	
+					balanceamento(pilha.desempilha());
 				}
 				ultimo = NIL;
 			}
 		}
-		
+
 };
 
 class Hash{
 	private:
 		Arvore lista[TAM];
-		
+
 		int funcaoHash(string s){
 			int aux = 0;
 			int cont = s.length();
 			for(int i = 0; i < 4; i++){
 				cont--;
 				aux += ((int)s[i])*eleva(128, cont);
-				
+
 			}
 			return mod(aux);
 		}
-		
+
 		int eleva(int n1, int n2){
 			int aux =1;
 			for(int i =0; i < n2; i++){
@@ -584,11 +626,11 @@ class Hash{
 			}
 			return aux;
 		}
-		
+
 		int mod(int num){
 			return num%TAM;
 		}
-		
+
 	public:
 
 		string formatacao(string std){
@@ -597,17 +639,17 @@ class Hash{
 			}
 			return std;
 		}
-				
+
 		void inicia(){
 			for(int i = 0; i < TAM; i++){
 				lista[i].cria();
 			}
 		}
-		
+
 		void inserirTabela(No* p){
 			lista[funcaoHash(p->getNome())].inserir(p);
 		}
-		
+
 		void buscaHash(string it){
 			int aux = funcaoHash(formatacao(it));
 			lista[aux].busca(atoi(it.c_str()), lista[aux].getRaiz());
@@ -622,7 +664,7 @@ int main(){
 	string palavra;
 	No aux[20000];
 	No* chaves[20000];
-	
+
 	hash.inicia();
 	arquivo.open("chaves.txt");
 	int cont = 0;
@@ -633,7 +675,7 @@ int main(){
 		cont++;
 	}
 	arquivo.close();
-	
+
 	cin >> entrada;
 	hash.buscaHash(entrada);
 }
