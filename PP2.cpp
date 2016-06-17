@@ -12,6 +12,18 @@ using namespace std;
 #define DIREITA 1
 #define tamPilha 100
 
+
+class Util {
+public:	
+	string addzeros(string key){
+		
+		while(key.length() < 4){
+			key = "0" + key;
+		}
+		return key;
+	}
+
+};
 class No{
 	private:
 		int chave;
@@ -28,41 +40,32 @@ class No{
 		void distancia(No* x, No* p){
 			cont++;
 			aux = 0;
-			if(p->ehNoFolha() == true){
-				if(x->getChave() == p->getChave()){
-					aux = cont;
-					cont = 0;
-				}
+			if(p->ehNoFolha() == true && x->getChave() == p->getChave()){
+				aux = cont;
+				cont = 0;
 			}
 			else if(x->getChave() > p->getChave()){
 				distancia(x, p->getNoDir());
 			}
-			else if(x->getChave() < p->getChave()){
+			else{
 				distancia(x, p->getNoEsq());
 			}
 		}
 
 		void noMaisLongo(No* p, No* raiz){
 			cont = 0;
-			if(p->ehNoFolha() == true){
+			if(p->ehNoFolha()){
 				distancia(p, raiz);
 				armazenaMaior(aux);
 			}
 			else{
-				if(p->temNoDir() == true){
+				if(p->temNoDir()){
 					noMaisLongo(p->getNoDir(), raiz);
 				}
-				if(p->temNoEsq() == true){
+				if(p->temNoEsq()){
 					noMaisLongo(p->getNoEsq(), raiz);
 				}
 			}
-		}
-
-		string formatacao(string std){
-			while(std.length() < 4){
-				std = "0" + std;
-			}
-			return std;
 		}
 
 	public:
@@ -76,7 +79,8 @@ class No{
 		}
 
 		void criaNo(string it){
-			nome = formatacao(it);
+			Util util;
+			nome = util.addzeros(it);
 			int aux;
 			aux = atoi(it.c_str());
 			chave = aux;
@@ -143,7 +147,7 @@ class No{
 
 			int altE = 0;		
 
-			if(temNoEsq() == true){
+			if(temNoEsq()){
 				compara = 0;
 				noMaisLongo(noEsq, noEsq);
 				altE = compara;
@@ -156,7 +160,7 @@ class No{
 		
 			int altD = 0;
 
-			if(temNoDir() == true){
+			if(temNoDir()){
 				compara = 0;
 				noMaisLongo(noDir, noDir);
 				altD = compara;
@@ -186,10 +190,7 @@ class Pilha{
 		}
 
 		void empilha(No* item){
- 			if(tam == tamPilha){
-				cout << "Lista Cheia";
-			}
-			else{
+ 			if(tam != tamPilha){
 				tam++;
 				pilha[tam] = item;
 			}
@@ -197,21 +198,12 @@ class Pilha{
 
 		No* desempilha(){
 			No* aux = pilha[tam];
-			if(tam == 0){
-				cout << "Lista Vazia\n";
-			}
-			else{
+			if(tam != 0){
 				tam--;
 			}
 			return aux;
 		}
 
-		void mostraPilha(){
-			for(int i = 0; i < tam; i++){
-				cout<< pilha[i]->getChave() << "\n";
-			}
-			cout << "-\n";
-		}
 
 		bool achaElemento(No* it){
 
@@ -275,22 +267,22 @@ class Arvore{
 			if((p->fatBalance() > 1) || (p->fatBalance() < -1)){
 				pilha.empilha(p);
 			}
-			if(p->temNoDir() == true){
+			else if(p->temNoDir()){
 				percorre(x, p->getNoDir());
 			}
-			if(p->temNoEsq() == true){
+			else if(p->temNoEsq()){
 				percorre(x, p->getNoEsq());
 			}
 		}
 
-		No* rotacaoSimples(No* p, int direcao){
-			No* aux;
-			No* saida;
-			No* nPai;
+		No* rotacaoSimples(No *p, int direcao){
+			No *aux;
+			No *saida;
+			No *nPai;
 
 			if(direcao == ESQUERDA){
 				saida = p->getNoDir();
-				if(p->getNoDir()->temNoEsq() == true){
+				if(p->getNoDir()->temNoEsq()){
 					p->getNoDir()->getNoEsq()->setPai(p);
 				}
 				if(p->temNoPai() == true){
@@ -313,8 +305,6 @@ class Arvore{
 				p->getNoDir()->setNoEsq(p);
 				p->setNoDir(aux);
 
-				return saida;
-
 			}else if(direcao == DIREITA){
 
 				saida = p->getNoEsq();
@@ -323,7 +313,7 @@ class Arvore{
 					p->getNoEsq()->getNoDir()->setPai(p);
 				}
 
-				if(p->temNoPai() == true){
+				if(p->temNoPai()){
 					nPai = p->getPai();
 					p->getNoEsq()->setPai(nPai);
 					if(saida->getChave() > nPai->getChave()){
@@ -343,11 +333,13 @@ class Arvore{
 				p->getNoEsq()->setNoDir(p);
 				p->setNoEsq(aux);
 
-				return saida;
 			}
-		}
 
+			return saida;
+
+		}
 		No* rotacaoDupla(No* p, int direcao){
+
 			
 			No* aux;
 			No* nPai;
@@ -404,13 +396,13 @@ class Arvore{
 			if(raiz->fatBalance() > 1){
 				if(raiz->getNoDir()->fatBalance() >= 0){
 					aux = rotacaoSimples(raiz, ESQUERDA);
-					if(aux->temNoPai() == false){
+					if(!aux->temNoPai()){
 						setRaiz(aux);
 					}
 				}
-				else if(raiz->getNoDir()->fatBalance() < 0){
+				else{
 					aux = rotacaoDupla(raiz, ESQUERDA);
-					if(aux->temNoPai() == false){
+					if(!aux->temNoPai()){
 						setRaiz(aux);
 					}
 				}
@@ -418,25 +410,19 @@ class Arvore{
 			else if(raiz->fatBalance() < -1){
 				if(raiz->getNoEsq()->fatBalance() <= 0){
 					aux = rotacaoSimples(raiz, DIREITA);
-					if(aux->temNoPai() == false){
+					if(!aux->temNoPai()){
 						setRaiz(aux);
 					}
 				}
-				else if(raiz->getNoEsq()->fatBalance() > 0){
+				else{
 					aux = rotacaoDupla(raiz, DIREITA);
-					if(aux->temNoPai() == false){
+					if(!aux->temNoPai()){
 						setRaiz(aux);
 					}
 				}
 			}
 		}
 
-		string formatacao(string std){
-			while(std.length() < 4){
-				std = "0" + std;
-			}
-			return std;
-		}
 
 	public:
 	
@@ -456,22 +442,21 @@ class Arvore{
 		void busca(int x, No* p){
 			saida[cont] = p;
 			cont++;
-			if(p->ehNoFolha() == true){
-			}
-			else{
-				if(p->temNoDir() == true){
+			if(!p->ehNoFolha()){
+				if(p->temNoDir()){
 					busca(x, p->getNoDir());
 				}
-				if(p->temNoEsq() == true){
+				if(p->temNoEsq()){
 					busca(x, p->getNoEsq());
 				}
 			}
 		}
 
 		void final(string str){
+			Util util;
 			bool encontrado = false;
 			for(int l = 0; l < cont; l++){
-				if(formatacao(str) == saida[l]->getNome()){
+				if(util.addzeros(str) == saida[l]->getNome()){
 					int menor = 99999;
 					int posicao;
 					int it;
@@ -496,7 +481,7 @@ class Arvore{
 				}
 			}
 			if(encontrado == false){
-				cout << "Chave não encontrada.";
+				cout << "Chave nÃ£o encontrada.";
 			}
 		}
 
@@ -546,13 +531,6 @@ class Hash{
 
 	public:
 
-		string formatacao(string std){
-			while(std.length() < 4){
-				std = "0" + std;
-			}
-			return std;
-		}
-
 		void inicia(){
 			for(int i = 0; i < TAM; i++){
 				lista[i].cria();
@@ -564,16 +542,16 @@ class Hash{
 		}
 
 		void buscaHash(string it){
-			int aux = funcaoHash(formatacao(it));
+			Util util;
+			int aux = funcaoHash(util.addzeros(it));
 			lista[aux].busca(atoi(it.c_str()), lista[aux].getRaiz());
 			lista[aux].final(it);
 		}
 };
 
-
 void distancia(No* x, No* p);
 void noMaisLongo(No* p, No* raiz);
-string formatacao(string std);
+string addzeros(string key);
 void criaNo(string it);
 int armazenaMaior(int it);
 void setChave(int item);
@@ -643,8 +621,3 @@ int main(){
 	cin >> entrada;
 	hash.buscaHash(entrada);
 }
-
-
-
-
-
