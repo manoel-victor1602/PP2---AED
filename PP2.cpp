@@ -7,11 +7,10 @@ using namespace std;
 
 #define TAM 787
 #define NIL NULL
-
-
-#define DIREITA 200
-#define ESQUERDA 100
-
+#define numChaves 20000
+#define ESQUERDA 0
+#define DIREITA 1
+#define tamPilha 100
 
 class Item{
 	private:
@@ -31,8 +30,6 @@ class No{
 		Item item;
 		string nome;
 		int fatorBalance;
-		int alturaEsquerda;
-		int alturaDireita;
 		No* noEsq;
 		No* noDir;
 		No* pai;
@@ -88,8 +85,6 @@ class No{
 			Item aux;
 			aux.setChave(atoi(it.c_str()));
 			item = aux;
-			alturaDireita = 0;
-			alturaEsquerda = 0;
 			noEsq = NIL;
 			noDir = NIL;
 			pai = NIL;
@@ -141,55 +136,52 @@ class No{
 		}
 
 		bool ehNoFolha(){
-			if((noDir == NIL )&&(noEsq == NIL)){
-				return true;
-			}
-			else{
-				return false;
-			}
+			return ((noDir == NIL )&&(noEsq == NIL));
+			
 		}
 
 		bool temNoPai(){
-			if(pai == NIL){
-				return false;
-			}
-			else{
-				return true;
-			}
+			return (pai != NIL);
 		}
 
 		bool temNoEsq(){
-			if(noEsq != NIL){
-				return true;
-			}
-			else{
-				return false;
-			}
+			return (noEsq != NIL);
 		}
 
 		bool temNoDir(){
-			if(noDir != NIL){
-				return true;
-			}
-			else{
-				return false;
-			}
+			return (noDir != NIL);
 		}
 
-		int fatBalance(){
-			int altE = 0;
-			int altD = 0;
+		int alturaEsquerda(){
+
+			int altE = 0;		
+
 			if(temNoEsq() == true){
 				compara = 0;
 				noMaisLongo(noEsq, noEsq);
 				altE = compara;
 			}
+
+			return altE;
+		}
+		
+		int alturaDireita(){
+		
+			int altD = 0;
+
 			if(temNoDir() == true){
 				compara = 0;
 				noMaisLongo(noDir, noDir);
 				altD = compara;
 			}
-			return altD - altE;
+
+			return altD;
+		
+		}
+
+		int fatBalance(){
+			
+			return alturaDireita() - alturaEsquerda();
 		}
 
 
@@ -197,39 +189,37 @@ class No{
 
 class Pilha{
 	private:
-		int topo;
-		int fundo;
-		No* pilha[100];
+		int tam;
+		No* pilha[tamPilha];
 
 	public:
 		void criarPilha(){
-			fundo = 0;
-			topo = fundo;
+			tam = 0;
 		}
 
 		void empilha(No* item){
- 			if(topo == 100){
+ 			if(tam == tamPilha){
 				cout << "Lista Cheia";
 			}
 			else{
-				topo = topo +1;
-				pilha[topo] = item;
+				tam++;
+				pilha[tam] = item;
 			}
 		}
 
 		No* desempilha(){
-			No* aux = pilha[topo];
-			if(topo == fundo){
+			No* aux = pilha[tam];
+			if(tam == 0){
 				cout << "Lista Vazia\n";
 			}
 			else{
-				topo = topo - 1;
+				tam--;
 			}
 			return aux;
 		}
 
 		void mostraPilha(){
-			for(int i =1; i < topo + 1; i++){
+			for(int i = 0; i < tam; i++){
 				cout<< pilha[i]->getItem() << "\n";
 			}
 			cout << "-\n";
@@ -237,7 +227,7 @@ class Pilha{
 
 		bool achaElemento(No* it){
 
-			for(int i = 1; i < topo + 1; i++){
+			for(int i = 0; i < tam; i++){
 				if(pilha[i]->getItem() == it->getItem()){
 					return true;
 				}
@@ -247,11 +237,11 @@ class Pilha{
 		}
 
 		int alturaPilha(){
-			return topo;
+			return tam;
 		}
 
 		int alturaDe(No* it){
-			for(int i = 1; i < topo + 1; i++){
+			for(int i = 0; i < tam; i++){
 				if(pilha[i]->getItem() == it->getItem()){
 					return i;
 				}
@@ -259,7 +249,7 @@ class Pilha{
 		}
 
 		No* ultimoElemento(){
-			return pilha[topo];
+			return pilha[tam];
 		}
 };
 
@@ -268,11 +258,13 @@ class Arvore{
 		No* raiz;
 		Pilha pilha;
 		No* ultimo;
-		No* saida[20];
+		No* saida[tamPilha];
 		int cont;
 
 		void inser(No* item, No* raiz){
-			if(((raiz->temNoDir() == false) && (item->getItem() > raiz->getItem())) || ((raiz->temNoEsq() == false) && (item->getItem() < raiz->getItem()))){
+			if(((raiz->temNoDir() == false) && (item->getItem() > raiz->getItem())) ||
+			   ((raiz->temNoEsq() == false) && (item->getItem() < raiz->getItem()))) {
+
 				if(item->getItem() > raiz->getItem()){
 					item->setPai(raiz);
 					raiz->setNoDir(item);
@@ -302,126 +294,80 @@ class Arvore{
 			}
 		}
 
-
 		No* rotacaoSimples(No* p, int direcao){
-            No* aux;
-			No* saida;
-			No* nPai;
-
-			switch(direcao){
-            case ESQUERDA:
-                saida = p->getNoDir();
-                if(p->getNoDir()->temNoEsq() == true){
-                    p->getNoDir()->getNoEsq()->setPai(p);
-                }
-                if(p->temNoPai() == true){
-                    nPai = p->getPai();
-                    p->getNoDir()->setPai(nPai);
-                    if(saida->getItem() > nPai->getItem()){
-                        nPai->setNoDir(saida);
-                    }
-                    else{
-                        nPai->setNoEsq(saida);
-                    }
-                    saida->setPai(nPai);
-                }
-                else{
-                    saida->setPai(NIL);
-                }
-                p->setPai(p->getNoDir());
-                aux = p->getNoDir()->getNoEsq();
-                p->getNoDir()->setNoEsq(p);
-                p->setNoDir(aux);
-                return saida;
-			case DIREITA:
-                saida = p->getNoEsq();
-                if(p->getNoEsq()->temNoDir() == true){
-                    p->getNoEsq()->getNoDir()->setPai(p);
-                }
-                if(p->temNoPai() == true){
-                    nPai = p->getPai();
-                    p->getNoEsq()->setPai(nPai);
-                    if(saida->getItem() > nPai->getItem()){
-                        nPai->setNoDir(saida);
-                    }
-                    else{
-                        nPai->setNoEsq(saida);
-                    }
-                    saida->setPai(nPai);
-                }
-                else{
-                    saida->setPai(NIL);
-                }
-                p->setPai(p->getNoEsq());
-                aux = p->getNoEsq()->getNoDir();
-                p->getNoEsq()->setNoDir(p);
-                p->setNoEsq(aux);
-                return saida;
-		}
-
-		/*
-		No* rotacaoSimplesEsq(No* p){
 			No* aux;
 			No* saida;
 			No* nPai;
-			saida = p->getNoDir();
-			if(p->getNoDir()->temNoEsq() == true){
-				p->getNoDir()->getNoEsq()->setPai(p);
-			}
-			if(p->temNoPai() == true){
-				nPai = p->getPai();
-				p->getNoDir()->setPai(nPai);
-				if(saida->getItem() > nPai->getItem()){
-					nPai->setNoDir(saida);
+
+			if(direcao == ESQUERDA){
+				saida = p->getNoDir();
+				if(p->getNoDir()->temNoEsq() == true){
+					p->getNoDir()->getNoEsq()->setPai(p);
+				}
+				if(p->temNoPai() == true){
+					nPai = p->getPai();
+					p->getNoDir()->setPai(nPai);
+					if(saida->getItem() > nPai->getItem()){
+						nPai->setNoDir(saida);
+					}
+					else{
+						nPai->setNoEsq(saida);
+					}
+					saida->setPai(nPai);
 				}
 				else{
-					nPai->setNoEsq(saida);
+					saida->setPai(NIL);
 				}
-				saida->setPai(nPai);
-			}
-			else{
-				saida->setPai(NIL);
-			}
-			p->setPai(p->getNoDir());
-			aux = p->getNoDir()->getNoEsq();
-			p->getNoDir()->setNoEsq(p);
-			p->setNoDir(aux);
-			return saida;
-		}
 
-		No* rotacaoSimplesDir(No* p){
-			No* aux;
-			No* saida;
-			No* nPai;
-			saida = p->getNoEsq();
-			if(p->getNoEsq()->temNoDir() == true){
-				p->getNoEsq()->getNoDir()->setPai(p);
-			}
-			if(p->temNoPai() == true){
-				nPai = p->getPai();
-				p->getNoEsq()->setPai(nPai);
-				if(saida->getItem() > nPai->getItem()){
-					nPai->setNoDir(saida);
+				p->setPai(p->getNoDir());
+				aux = p->getNoDir()->getNoEsq();
+				p->getNoDir()->setNoEsq(p);
+				p->setNoDir(aux);
+
+				return saida;
+
+			}else if(direcao == DIREITA){
+
+				saida = p->getNoEsq();
+				
+				if(p->getNoEsq()->temNoDir() == true){
+					p->getNoEsq()->getNoDir()->setPai(p);
+				}
+
+				if(p->temNoPai() == true){
+					nPai = p->getPai();
+					p->getNoEsq()->setPai(nPai);
+					if(saida->getItem() > nPai->getItem()){
+						nPai->setNoDir(saida);
+					}
+					else{
+						nPai->setNoEsq(saida);
+					}
+					saida->setPai(nPai);
 				}
 				else{
-					nPai->setNoEsq(saida);
+					saida->setPai(NIL);
 				}
-				saida->setPai(nPai);
+
+				p->setPai(p->getNoEsq());
+				aux = p->getNoEsq()->getNoDir();
+				p->getNoEsq()->setNoDir(p);
+				p->setNoEsq(aux);
+
+				return saida;
 			}
-			else{
-				saida->setPai(NIL);
-			}
-			p->setPai(p->getNoEsq());
-			aux = p->getNoEsq()->getNoDir();
-			p->getNoEsq()->setNoDir(p);
-			p->setNoEsq(aux);
-			return saida;
 		}
-*/
-		No* rotacaoDuplaEsq(No* p){
+
+		No* rotacaoDupla(No* p, int direcao){
+			
 			No* aux;
 			No* nPai;
-			aux = p->getNoDir()->getNoEsq();
+
+			if(direcao == ESQUERDA)			
+				aux = p->getNoDir()->getNoEsq();
+			else if(direcao == DIREITA)
+				aux = p->getNoEsq()->getNoDir();
+
 			if(p->temNoPai() == true){
 				nPai = p->getPai();
 				if(aux->getItem() > nPai->getItem()){
@@ -431,9 +377,17 @@ class Arvore{
 					nPai->setNoEsq(aux);
 				}
 			}
-			rotacaoSimples(p->getNoDir(),DIREITA);
-			p->setNoDir(aux);
-			rotacaoSimples(p,ESQUERDA);
+
+			if(direcao == ESQUERDA){
+				rotacaoSimples(p->getNoDir(), DIREITA);
+				p->setNoDir(aux);
+				rotacaoSimples(p,ESQUERDA);
+			}else if(direcao == DIREITA){
+				rotacaoSimples(p->getNoEsq(), ESQUERDA);
+				p->setNoEsq(aux);
+				rotacaoSimples(p, DIREITA);
+			}
+
 			if(aux->temNoEsq() == true){
 				if(aux->getNoEsq()->temNoEsq() == true){
 					aux->getNoEsq()->getNoEsq()->setPai(aux->getNoEsq());
@@ -450,55 +404,23 @@ class Arvore{
 					aux->getNoDir()->getNoDir()->setPai(aux->getNoDir());
 				}
 			}
+
 			return aux;
+
 		}
 
-		No* rotacaoDuplaDir(No* p){
-			No* aux;
-			No* nPai;
-			aux = p->getNoEsq()->getNoDir();
-			if(p->temNoPai() == true){
-				nPai = p->getPai();
-				if(aux->getItem() > nPai->getItem()){
-					nPai->setNoDir(aux);
-				}
-				else{
-					nPai->setNoEsq(aux);
-				}
-			}
-			rotacaoSimples(p->getNoEsq(),ESQUERDA);
-			p->setNoEsq(aux);
-			rotacaoSimples(p,DIREITA);
-			if(aux->temNoEsq() == true){
-				if(aux->getNoEsq()->temNoEsq() == true){
-					aux->getNoEsq()->getNoEsq()->setPai(aux->getNoEsq());
-				}
-				if(aux->getNoEsq()->temNoDir() == true){
-					aux->getNoEsq()->getNoDir()->setPai(aux->getNoEsq());
-				}
-			}
-			if(aux->temNoDir() == true){
-				if(aux->getNoDir()->temNoEsq() == true){
-					aux->getNoDir()->getNoEsq()->setPai(aux->getNoDir());
-				}
-				if(aux->getNoDir()->temNoDir() == true){
-					aux->getNoDir()->getNoDir()->setPai(aux->getNoDir());
-				}
-			}
-			return aux;
-		}
 
 		void balanceamento(No* raiz){
 			No* aux;
 			if(raiz->fatBalance() > 1){
 				if(raiz->getNoDir()->fatBalance() >= 0){
-					aux = rotacaoSimples(raiz,ESQUERDA);
+					aux = rotacaoSimples(raiz, ESQUERDA);
 					if(aux->temNoPai() == false){
 						setRaiz(aux);
 					}
 				}
 				else if(raiz->getNoDir()->fatBalance() < 0){
-					aux = rotacaoDuplaEsq(raiz);
+					aux = rotacaoDupla(raiz, ESQUERDA);
 					if(aux->temNoPai() == false){
 						setRaiz(aux);
 					}
@@ -506,13 +428,13 @@ class Arvore{
 			}
 			else if(raiz->fatBalance() < -1){
 				if(raiz->getNoEsq()->fatBalance() <= 0){
-					aux = rotacaoSimples(raiz,DIREITA);
+					aux = rotacaoSimples(raiz, DIREITA);
 					if(aux->temNoPai() == false){
 						setRaiz(aux);
 					}
 				}
 				else if(raiz->getNoEsq()->fatBalance() > 0){
-					aux = rotacaoDuplaDir(raiz);
+					aux = rotacaoDupla(raiz, DIREITA);
 					if(aux->temNoPai() == false){
 						setRaiz(aux);
 					}
@@ -578,6 +500,9 @@ class Arvore{
 						cout << aux->getNome() + " ";
 						menor = 99999;
 					}
+
+					cout << endl;
+
 					encontrado = true;
 				}
 			}
@@ -658,16 +583,19 @@ class Hash{
 };
 
 int main(){
+
 	Hash hash;
 	ifstream arquivo;
 	string entrada;
 	string palavra;
-	No aux[20000];
-	No* chaves[20000];
-
+	No aux[numChaves];
+	No* chaves[numChaves];
+	
 	hash.inicia();
 	arquivo.open("chaves.txt");
+
 	int cont = 0;
+
 	while(arquivo >> palavra){
 		aux[cont].criaNo(palavra);
 		chaves[cont] = &aux[cont];
