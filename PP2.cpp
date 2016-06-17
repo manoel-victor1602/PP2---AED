@@ -25,6 +25,53 @@ class Item{
 		}
 };
 
+void distancia(No* x, No* p);
+void noMaisLongo(No* p, No* raiz);
+string formatacao(string std);
+void criaNo(string it);
+int armazenaMaior(int it);
+void setItem(Item item);
+void setNoEsq(No* noEsq);
+void setNoDir(No* noDir);
+void setPai(No* pai);
+string getNome();
+No* getPai();
+int getItem();
+No* getNoEsq();
+No* getNoDir();
+bool ehNoFolha();
+bool temNoPai();
+bool temNoEsq();
+bool temNoDir()
+int alturaEsquerda();
+int alturaDireita();
+int fatBalance();
+void criarPilha();
+void empilha(No* item);
+No* desempilha();
+void mostraPilha();
+bool achaElemento(No* it);
+int alturaPilha();
+int alturaDe(No* it)
+No* ultimoElemento();
+void inser(No* item, No* raiz);
+void percorre(No* x, No* p);
+No* rotacaoSimples(No* p, int direcao);
+No* rotacaoDupla(No* p, int direcao);
+void balanceamento(No* raiz);
+void setRaiz(No* raiz);
+No* getRaiz();
+void cria();
+void busca(int x, No* p);
+void final(string str);
+void inserir(No* num);
+int funcaoHash(string s);
+int eleva(int n1, int n2);
+int mod(int num);
+void inicia();
+void inserirTabela(No* p);
+void buscaHash(string it);
+
 class No{
 	private:
 		Item item;
@@ -187,6 +234,7 @@ class No{
 
 };
 
+
 class Pilha{
 	private:
 		int tam;
@@ -252,6 +300,7 @@ class Pilha{
 			return pilha[tam];
 		}
 };
+
 
 class Arvore{
 	private:
@@ -450,7 +499,7 @@ class Arvore{
 		}
 
 	public:
-
+	
 		void setRaiz(No* raiz){
 			this->raiz = raiz;
 		}
@@ -528,7 +577,6 @@ class Arvore{
 		}
 
 };
-
 class Hash{
 	private:
 		Arvore lista[TAM];
