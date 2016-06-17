@@ -12,69 +12,9 @@ using namespace std;
 #define DIREITA 1
 #define tamPilha 100
 
-class Item{
-	private:
-		int chave;
-	public:
-		void setChave(int chave){
-			this->chave = chave;
-		}
-
-		int getChave(){
-			return chave;
-		}
-};
-
-void distancia(No* x, No* p);
-void noMaisLongo(No* p, No* raiz);
-string formatacao(string std);
-void criaNo(string it);
-int armazenaMaior(int it);
-void setItem(Item item);
-void setNoEsq(No* noEsq);
-void setNoDir(No* noDir);
-void setPai(No* pai);
-string getNome();
-No* getPai();
-int getItem();
-No* getNoEsq();
-No* getNoDir();
-bool ehNoFolha();
-bool temNoPai();
-bool temNoEsq();
-bool temNoDir()
-int alturaEsquerda();
-int alturaDireita();
-int fatBalance();
-void criarPilha();
-void empilha(No* item);
-No* desempilha();
-void mostraPilha();
-bool achaElemento(No* it);
-int alturaPilha();
-int alturaDe(No* it)
-No* ultimoElemento();
-void inser(No* item, No* raiz);
-void percorre(No* x, No* p);
-No* rotacaoSimples(No* p, int direcao);
-No* rotacaoDupla(No* p, int direcao);
-void balanceamento(No* raiz);
-void setRaiz(No* raiz);
-No* getRaiz();
-void cria();
-void busca(int x, No* p);
-void final(string str);
-void inserir(No* num);
-int funcaoHash(string s);
-int eleva(int n1, int n2);
-int mod(int num);
-void inicia();
-void inserirTabela(No* p);
-void buscaHash(string it);
-
 class No{
 	private:
-		Item item;
+		int chave;
 		string nome;
 		int fatorBalance;
 		No* noEsq;
@@ -89,15 +29,15 @@ class No{
 			cont++;
 			aux = 0;
 			if(p->ehNoFolha() == true){
-				if(x->getItem() == p->getItem()){
+				if(x->getChave() == p->getChave()){
 					aux = cont;
 					cont = 0;
 				}
 			}
-			else if(x->getItem() > p->getItem()){
+			else if(x->getChave() > p->getChave()){
 				distancia(x, p->getNoDir());
 			}
-			else if(x->getItem() < p->getItem()){
+			else if(x->getChave() < p->getChave()){
 				distancia(x, p->getNoEsq());
 			}
 		}
@@ -127,11 +67,19 @@ class No{
 
 	public:
 
+		void setChave(int chave){
+			this->chave = chave;
+		}
+
+		int getChave(){
+			return chave;
+		}
+
 		void criaNo(string it){
 			nome = formatacao(it);
-			Item aux;
-			aux.setChave(atoi(it.c_str()));
-			item = aux;
+			int aux;
+			aux = atoi(it.c_str());
+			chave = aux;
 			noEsq = NIL;
 			noDir = NIL;
 			pai = NIL;
@@ -144,10 +92,6 @@ class No{
 				compara = it;
 			}
 			return compara;
-		}
-
-		void setItem(Item item){
-			this->item = item;
 		}
 
 		void setNoEsq(No* noEsq){
@@ -168,10 +112,6 @@ class No{
 
 		No* getPai(){
 			return pai;
-		}
-
-		int getItem(){
-			return item.getChave();
 		}
 
 		No* getNoEsq(){
@@ -268,7 +208,7 @@ class Pilha{
 
 		void mostraPilha(){
 			for(int i = 0; i < tam; i++){
-				cout<< pilha[i]->getItem() << "\n";
+				cout<< pilha[i]->getChave() << "\n";
 			}
 			cout << "-\n";
 		}
@@ -276,7 +216,7 @@ class Pilha{
 		bool achaElemento(No* it){
 
 			for(int i = 0; i < tam; i++){
-				if(pilha[i]->getItem() == it->getItem()){
+				if(pilha[i]->getChave() == it->getChave()){
 					return true;
 				}
 			}
@@ -290,7 +230,7 @@ class Pilha{
 
 		int alturaDe(No* it){
 			for(int i = 0; i < tam; i++){
-				if(pilha[i]->getItem() == it->getItem()){
+				if(pilha[i]->getChave() == it->getChave()){
 					return i;
 				}
 			}
@@ -311,10 +251,10 @@ class Arvore{
 		int cont;
 
 		void inser(No* item, No* raiz){
-			if(((raiz->temNoDir() == false) && (item->getItem() > raiz->getItem())) ||
-			   ((raiz->temNoEsq() == false) && (item->getItem() < raiz->getItem()))) {
+			if(((raiz->temNoDir() == false) && (item->getChave() > raiz->getChave())) ||
+			   ((raiz->temNoEsq() == false) && (item->getChave() < raiz->getChave()))) {
 
-				if(item->getItem() > raiz->getItem()){
+				if(item->getChave() > raiz->getChave()){
 					item->setPai(raiz);
 					raiz->setNoDir(item);
 				}
@@ -323,10 +263,10 @@ class Arvore{
 					raiz->setNoEsq(item);
 				}
 			}
-			else if(item->getItem() > raiz->getItem()){
+			else if(item->getChave() > raiz->getChave()){
 				inser(item, raiz->getNoDir());
 			}
-			else if(item->getItem() < raiz->getItem()){
+			else if(item->getChave() < raiz->getChave()){
 				inser(item, raiz->getNoEsq());
 			}
 		}
@@ -356,7 +296,7 @@ class Arvore{
 				if(p->temNoPai() == true){
 					nPai = p->getPai();
 					p->getNoDir()->setPai(nPai);
-					if(saida->getItem() > nPai->getItem()){
+					if(saida->getChave() > nPai->getChave()){
 						nPai->setNoDir(saida);
 					}
 					else{
@@ -386,7 +326,7 @@ class Arvore{
 				if(p->temNoPai() == true){
 					nPai = p->getPai();
 					p->getNoEsq()->setPai(nPai);
-					if(saida->getItem() > nPai->getItem()){
+					if(saida->getChave() > nPai->getChave()){
 						nPai->setNoDir(saida);
 					}
 					else{
@@ -419,7 +359,7 @@ class Arvore{
 
 			if(p->temNoPai() == true){
 				nPai = p->getPai();
-				if(aux->getItem() > nPai->getItem()){
+				if(aux->getChave() > nPai->getChave()){
 					nPai->setNoDir(aux);
 				}
 				else{
@@ -534,18 +474,18 @@ class Arvore{
 				if(formatacao(str) == saida[l]->getNome()){
 					int menor = 99999;
 					int posicao;
-					Item it;
+					int it;
 					No* aux;
 					for(int i = 0; i < cont; i++){
 						for(int j = 0; j < cont; j++){
-							if(saida[j]->getItem() < menor){
+							if(saida[j]->getChave() < menor){
 								aux = saida[j];
 								posicao = j;
-								menor = saida[j]->getItem();
+								menor = saida[j]->getChave();
 							}
 						}
-						it.setChave(99999);
-						saida[posicao]->setItem(it);
+						it = 99999;
+						saida[posicao]->setChave(it);
 						cout << aux->getNome() + " ";
 						menor = 99999;
 					}
@@ -629,6 +569,54 @@ class Hash{
 			lista[aux].final(it);
 		}
 };
+
+
+void distancia(No* x, No* p);
+void noMaisLongo(No* p, No* raiz);
+string formatacao(string std);
+void criaNo(string it);
+int armazenaMaior(int it);
+void setChave(int item);
+void setNoEsq(No* noEsq);
+void setNoDir(No* noDir);
+void setPai(No* pai);
+string getNome();
+No* getPai();
+int getChave();
+No* getNoEsq();
+No* getNoDir();
+bool ehNoFolha();
+bool temNoPai();
+bool temNoEsq();
+bool temNoDir();
+int alturaEsquerda();
+int alturaDireita();
+int fatBalance();
+void criarPilha();
+void empilha(No* item);
+No* desempilha();
+void mostraPilha();
+bool achaElemento(No* it);
+int alturaPilha();
+int alturaDe(No* it);
+No* ultimoElemento();
+void inser(No* item, No* raiz);
+void percorre(No* x, No* p);
+No* rotacaoSimples(No* p, int direcao);
+No* rotacaoDupla(No* p, int direcao);
+void balanceamento(No* raiz);
+void setRaiz(No* raiz);
+No* getRaiz();
+void cria();
+void busca(int x, No* p);
+void final(string str);
+void inserir(No* num);
+int funcaoHash(string s);
+int eleva(int n1, int n2);
+int mod(int num);
+void inicia();
+void inserirTabela(No* p);
+void buscaHash(string it);
 
 int main(){
 
