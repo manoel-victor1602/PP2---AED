@@ -621,3 +621,4 @@ int main(){
 	cin >> entrada;
 	hash.buscaHash(entrada);
 }
+
